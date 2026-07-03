@@ -18,7 +18,11 @@ connection_string = (
     "&TrustServerCertificate=no"
 )
 
-engine = create_engine(connection_string)
+engine = create_engine(
+    connection_string,
+    pool_pre_ping=True,
+    pool_recycle=1800
+)
 
 
 def test_connection():
