@@ -87,8 +87,8 @@ def get_latest_location(device_id: int):
         return dict(result._mapping)
 
 
-@router.get("/devices/{device_id}/location-history")
-def get_location_history(device_id: int):
+@router.get("/devices/{device_id}/locations")
+def get_device_locations(device_id: int):
     with engine.connect() as connection:
         result = connection.execute(text("""
             SELECT LocationUpdateId, DeviceId, Latitude, Longitude, AccuracyMeters, RecordedAt, ReceivedAt
