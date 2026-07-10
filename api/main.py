@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routes import users, devices, locations
+from routes import users, devices, locations, auth
 
 app = FastAPI(title="Pet Tracker API")
 
@@ -17,3 +17,4 @@ def health():
 app.include_router(users.router)
 app.include_router(devices.router)
 app.include_router(locations.router)
+app.include_router(auth.router)
