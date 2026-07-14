@@ -6,7 +6,7 @@ import requests
 
 
 API_URL = "https://pet-tracker-api-capstone-cgh4gjhtdwevf9dq.canadacentral-01.azurewebsites.net/locations"
-DEVICE_IDENTIFIER = "TEST-DEVICE-001"
+DEVICE_IDENTIFIER = "TEST-DEVICE-002"
 
 
 class DeviceSimulator:
