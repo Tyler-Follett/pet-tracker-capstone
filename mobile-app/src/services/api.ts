@@ -1,8 +1,10 @@
 import { File } from "expo-file-system";
 import { fetch } from "expo/fetch";
 
-const API_BASE_URL = "http://10.0.2.2:8000";
+const API_BASE_URL =
+  "https://pet-tracker-api-capstone-cgh4gjhtdwevf9dq.canadacentral-01.azurewebsites.net";
 
+  
 console.log("API URL:", API_BASE_URL);
 
 export type LoginResponse = {

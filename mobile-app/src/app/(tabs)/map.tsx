@@ -1,10 +1,29 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import MapView, { Marker } from "react-native-maps";
+
+const TEST_LOCATION = {
+  latitude: 47.5615,
+  longitude: -52.7126,
+};
 
 export default function MapScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Live Map</Text>
-      <Text style={styles.subtitle}>Your pet&apos;s current location will appear here.</Text>
+      <MapView
+        style={styles.map}
+        initialRegion={{
+          latitude: TEST_LOCATION.latitude,
+          longitude: TEST_LOCATION.longitude,
+          latitudeDelta: 0.02,
+          longitudeDelta: 0.02,
+        }}
+      >
+        <Marker
+          coordinate={TEST_LOCATION}
+          title="Test Pet"
+          description="Test location"
+        />
+      </MapView>
     </View>
   );
 }
@@ -12,17 +31,9 @@ export default function MapScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    textAlign: "center",
+  map: {
+    width: "100%",
+    height: "100%",
   },
 });

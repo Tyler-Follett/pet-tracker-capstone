@@ -78,12 +78,18 @@ def get_user_devices(user_id: int):
                 d.IsActive,
                 d.CreatedAt,
                 ud.AddedAt,
+                latest.Latitude AS LatestLatitude,
+                latest.Longitude AS LatestLongitude,
+                latest.AccuracyMeters AS LatestAccuracyMeters,
                 latest.ReceivedAt AS LatestReceivedAt
             FROM UserDevices ud
             INNER JOIN Devices d
                 ON d.DeviceId = ud.DeviceId
             OUTER APPLY (
                 SELECT TOP 1
+                    lu.Latitude,
+                    lu.Longitude,
+                    lu.AccuracyMeters,
                     lu.ReceivedAt
                 FROM LocationUpdates lu
                 WHERE lu.DeviceId = d.DeviceId
