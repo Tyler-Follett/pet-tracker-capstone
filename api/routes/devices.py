@@ -26,6 +26,8 @@ class DeviceClaim(BaseModel):
 class DeviceNameUpdate(BaseModel):
     deviceName: str | None = None
 
+class DeviceMarkerColorUpdate(BaseModel):
+    markerColor: str
 
 @router.get("")
 def get_devices():
@@ -113,6 +115,49 @@ def get_user_devices(user_id: int):
 
         return devices
 
+@router.put("/{device_id}/marker-color")
+def update_device_marker_color(
+    device_id: int,
+    update: DeviceMarkerColorUpdate
+):
+    allowed_colors = {
+        "#2563EB",
+        "#16A34A",
+        "#EA580C",
+        "#9333EA",
+        "#DC2626",
+        "#DB2777",
+    }
+
+    marker_color = update.markerColor.upper()
+
+    if marker_color not in allowed_colors:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid marker color"
+        )
+
+    with engine.begin() as connection:
+        result = connection.execute(text("""
+            UPDATE Devices
+            SET MarkerColor = :markerColor
+            WHERE DeviceId = :deviceId
+        """), {
+            "markerColor": marker_color,
+            "deviceId": device_id
+        })
+
+        if result.rowcount == 0:
+            raise HTTPException(
+                status_code=404,
+                detail="Device not found"
+            )
+
+    return {
+        "deviceId": device_id,
+        "markerColor": marker_color,
+        "message": "Marker color updated"
+    }
 
 @router.get("/{device_id}")
 def get_device(device_id: int):

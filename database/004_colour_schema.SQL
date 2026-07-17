@@ -1,0 +1,2 @@
+ALTER TABLE Devices
+ADD MarkerColor NVARCHAR(20) NULL;

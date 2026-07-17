@@ -18,11 +18,15 @@ export type Pet = {
   DeviceId: number;
   DeviceName: string | null;
   DeviceIdentifier: string;
+  PhotoUrl: string | null;
   IsActive: boolean;
   CreatedAt: string;
-  AddedAt?: string;
-  PhotoUrl: string | null;
+  AddedAt: string;
+  LatestLatitude: number | null;
+  LatestLongitude: number | null;
+  LatestAccuracyMeters: number | null;
   LatestReceivedAt: string | null;
+  MarkerColor: string | null;
 };
 
 export async function getPet(deviceId: number): Promise<Pet> {
@@ -172,6 +176,34 @@ export async function register(
 if (!response.ok) {
   const errorData = await response.json();
   throw new Error(getErrorMessage(errorData, "Registration failed."));
+  }
+}
+export async function updatePetMarkerColor(
+  deviceId: number,
+  markerColor: string
+): Promise<void> {
+  const response = await fetch(
+    `${API_BASE_URL}/devices/${deviceId}/marker-color`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        markerColor,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json();
+
+    throw new Error(
+      getErrorMessage(
+        errorData,
+        "Unable to update marker color."
+      )
+    );
   }
 }
 
