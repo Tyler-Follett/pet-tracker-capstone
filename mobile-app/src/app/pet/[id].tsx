@@ -12,7 +12,15 @@ import * as ImagePicker from "expo-image-picker";
 
 import AppTextInput from "../../components/AppTextInput";
 import PrimaryButton from "../../components/PrimaryButton";
-import { getPet, Pet, renamePet, uploadPetPhoto, } from "../../services/api";
+import { getPet, Pet, renamePet, uploadPetPhoto,updatePetMarkerColor, } from "../../services/api";
+const MARKER_COLORS = [
+  { name: "Blue", value: "#2563EB" },
+  { name: "Green", value: "#16A34A" },
+  { name: "Orange", value: "#EA580C" },
+  { name: "Purple", value: "#9333EA" },
+  { name: "Red", value: "#DC2626" },
+  { name: "Pink", value: "#DB2777" },
+];
 
 export default function PetDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -27,6 +35,8 @@ export default function PetDetailsScreen() {
   const [showTrackerDetails, setShowTrackerDetails] = useState(false);
   const [currentTime, setCurrentTime] = useState(Date.now());
   const deviceId = Number(id);
+  const [isSavingMarkerColor, setIsSavingMarkerColor] =
+  useState(false);
 
   useEffect(() => {
   const interval = setInterval(() => {
@@ -83,6 +93,44 @@ export default function PetDetailsScreen() {
 
     loadPet();
   }, [deviceId]);
+
+  async function handleMarkerColorChange(
+    markerColor: string
+  ) {
+    if (
+      isSavingMarkerColor ||
+      pet?.MarkerColor === markerColor
+    ) {
+      return;
+    }
+
+    try {
+      setError("");
+      setIsSavingMarkerColor(true);
+
+      await updatePetMarkerColor(
+        deviceId,
+        markerColor
+      );
+
+      setPet((currentPet) =>
+        currentPet
+          ? {
+              ...currentPet,
+              MarkerColor: markerColor,
+            }
+          : currentPet
+      );
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to update marker colour."
+      );
+    } finally {
+      setIsSavingMarkerColor(false);
+    }
+  }
 
   async function handleRename() {
     const newName = petName.trim();
@@ -354,6 +402,51 @@ async function handleChoosePhoto() {
                 })
             }
             >
+
+              <View style={styles.markerColorSection}>
+                <Text style={styles.markerColorLabel}>
+                  Map marker colour
+                </Text>
+
+                <View style={styles.markerColorOptions}>
+                  {MARKER_COLORS.map((color) => {
+                    const isSelected =
+                      (pet.MarkerColor ?? "#2563EB") ===
+                      color.value;
+
+                    return (
+                      <Pressable
+                        key={color.value}
+                        style={[
+                          styles.markerColorButton,
+                          {
+                            backgroundColor: color.value,
+                          },
+                          isSelected &&
+                            styles.selectedMarkerColorButton,
+                        ]}
+                        onPress={() =>
+                          handleMarkerColorChange(color.value)
+                        }
+                        disabled={isSavingMarkerColor}
+                      >
+                        {isSelected ? (
+                          <Text style={styles.markerColorCheck}>
+                            ✓
+                          </Text>
+                        ) : null}
+                      </Pressable>
+                    );
+                  })}
+                </View>
+
+                {isSavingMarkerColor ? (
+                  <Text style={styles.markerColorSaving}>
+                    Saving colour...
+                  </Text>
+                ) : null}
+              </View>
+              
             <Text style={styles.secondaryActionText}>View Live Map</Text>
             </Pressable>
             
@@ -643,5 +736,51 @@ const styles = StyleSheet.create({
   color: "#64748b",
   fontSize: 14,
   marginTop: 8,
+},
+markerColorSection: {
+  backgroundColor: "white",
+  borderRadius: 12,
+  padding: 16,
+  marginTop: 12,
+  borderWidth: 1,
+  borderColor: "#d1d5db",
+},
+
+markerColorLabel: {
+  fontSize: 16,
+  fontWeight: "700",
+  marginBottom: 14,
+},
+
+markerColorOptions: {
+  flexDirection: "row",
+  flexWrap: "wrap",
+  gap: 12,
+},
+
+markerColorButton: {
+  width: 42,
+  height: 42,
+  borderRadius: 21,
+  alignItems: "center",
+  justifyContent: "center",
+  borderWidth: 3,
+  borderColor: "transparent",
+},
+
+selectedMarkerColorButton: {
+  borderColor: "#111827",
+},
+
+markerColorCheck: {
+  color: "white",
+  fontSize: 20,
+  fontWeight: "bold",
+},
+
+markerColorSaving: {
+  color: "#64748b",
+  fontSize: 13,
+  marginTop: 10,
 },
 });
