@@ -77,6 +77,7 @@ def get_user_devices(user_id: int):
                 d.DeviceName,
                 d.DeviceIdentifier,
                 d.PhotoUrl,
+                d.MarkerColor,
                 d.IsActive,
                 d.CreatedAt,
                 ud.AddedAt,
