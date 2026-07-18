@@ -29,6 +29,37 @@ export type Pet = {
   MarkerColor: string | null;
 };
 
+export type LocationUpdate = {
+  LocationUpdateId: number;
+  DeviceId: number;
+  Latitude: number;
+  Longitude: number;
+  AccuracyMeters: number | null;
+  RecordedAt: string;
+  ReceivedAt: string;
+};
+
+export async function getPetLocationHistory(
+  deviceId: number
+): Promise<LocationUpdate[]> {
+  const response = await fetch(
+    `${API_BASE_URL}/devices/${deviceId}/locations`
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json();
+
+    throw new Error(
+      getErrorMessage(
+        errorData,
+        "Unable to load location history."
+      )
+    );
+  }
+
+  return response.json();
+}
+
 export async function getPet(deviceId: number): Promise<Pet> {
   const response = await fetch(`${API_BASE_URL}/devices/${deviceId}`);
 
