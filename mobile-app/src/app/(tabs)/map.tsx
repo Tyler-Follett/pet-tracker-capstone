@@ -16,6 +16,7 @@ import MapView, { Marker } from "react-native-maps";
 
 import { useAuth } from "../../context/AuthContext";
 import { getUserPets, Pet } from "../../services/api";
+import PhoneLocationMarker from "../../components/PhoneLocationMarker";
 
 const REFRESH_INTERVAL_MS = 5000;
 const DISPLAY_TIMER_INTERVAL_MS = 5000;
@@ -180,6 +181,7 @@ export default function MapScreen() {
         }}
         onPress={() => setSelectedPetId(null)}
       >
+        <PhoneLocationMarker />
         {petsWithLocations.map((pet) => {
           const markerColor =
             pet.MarkerColor ?? "#2563EB";

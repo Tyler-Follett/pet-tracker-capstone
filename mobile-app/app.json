@@ -27,6 +27,12 @@
    "plugins": [
   "expo-router",
   [
+    "expo-location",
+    {
+      "locationWhenInUsePermission": "Allow Pet Tracker to show your location on the map."
+    }
+  ],
+  [
     "expo-splash-screen",
     {
       "backgroundColor": "#208AEF",

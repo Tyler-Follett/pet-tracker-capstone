@@ -171,6 +171,7 @@ def get_device(device_id: int):
                 d.IsActive,
                 d.CreatedAt,
                 d.PhotoUrl,
+                d.MarkerColor,
                 latest.ReceivedAt AS LatestReceivedAt
             FROM Devices d
             OUTER APPLY (

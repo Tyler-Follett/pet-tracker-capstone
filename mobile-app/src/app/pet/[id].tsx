@@ -14,16 +14,19 @@ import AppTextInput from "../../components/AppTextInput";
 import PrimaryButton from "../../components/PrimaryButton";
 import { getPet, Pet, renamePet, uploadPetPhoto,updatePetMarkerColor, } from "../../services/api";
 const MARKER_COLORS = [
-  { name: "Blue", value: "#2563EB" },
-  { name: "Green", value: "#16A34A" },
-  { name: "Orange", value: "#EA580C" },
-  { name: "Purple", value: "#9333EA" },
-  { name: "Red", value: "#DC2626" },
-  { name: "Pink", value: "#DB2777" },
+  { name: "Blue", hex: "#2563EB" },
+  { name: "Green", hex: "#16A34A" },
+  { name: "Orange", hex: "#EA580C" },
+  { name: "Purple", hex: "#9333EA" },
+  { name: "Red", hex: "#DC2626" },
+  { name: "Pink", hex: "#DB2777" },
 ];
 
 export default function PetDetailsScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, markerColor } = useLocalSearchParams<{
+    id: string;
+    markerColor?: string;
+  }>();
 
   const [pet, setPet] = useState<Pet | null>(null);
   const [petName, setPetName] = useState("");
@@ -55,7 +58,14 @@ export default function PetDetailsScreen() {
     try {
       const updatedPet = await getPet(deviceId);
 
-      setPet(updatedPet);
+      setPet((currentPet) => ({
+        ...updatedPet,
+        MarkerColor:
+          updatedPet.MarkerColor ??
+          currentPet?.MarkerColor ??
+          markerColor ??
+          null,
+      }));
       setCurrentTime(Date.now());
     } catch (err) {
       console.error("Unable to refresh pet status:", err);
@@ -63,7 +73,7 @@ export default function PetDetailsScreen() {
   }, 15000);
 
   return () => clearInterval(interval);
-  }, [deviceId]);
+  }, [deviceId, markerColor]);
 
   useEffect(() => {
     async function loadPet() {
@@ -78,7 +88,10 @@ export default function PetDetailsScreen() {
 
         const data = await getPet(deviceId);
 
-        setPet(data);
+        setPet({
+          ...data,
+          MarkerColor: data.MarkerColor ?? markerColor ?? null,
+        });
         setPetName(data.DeviceName ?? "");
       } catch (err) {
         setError(
@@ -92,7 +105,7 @@ export default function PetDetailsScreen() {
     }
 
     loadPet();
-  }, [deviceId]);
+  }, [deviceId, markerColor]);
 
   async function handleMarkerColorChange(
     markerColor: string
@@ -219,7 +232,14 @@ async function handleChoosePhoto() {
 
     const updatedPet = await getPet(deviceId);
 
-    setPet(updatedPet);
+    setPet((currentPet) => ({
+      ...updatedPet,
+      MarkerColor:
+        updatedPet.MarkerColor ??
+        currentPet?.MarkerColor ??
+        markerColor ??
+        null,
+    }));
   } catch (err) {
     console.error("Photo upload error:", err);
 
@@ -412,21 +432,21 @@ async function handleChoosePhoto() {
                   {MARKER_COLORS.map((color) => {
                     const isSelected =
                       (pet.MarkerColor ?? "#2563EB") ===
-                      color.value;
+                      color.hex;
 
                     return (
                       <Pressable
-                        key={color.value}
+                        key={color.hex}
                         style={[
                           styles.markerColorButton,
                           {
-                            backgroundColor: color.value,
+                            backgroundColor: color.hex,
                           },
                           isSelected &&
                             styles.selectedMarkerColorButton,
                         ]}
                         onPress={() =>
-                          handleMarkerColorChange(color.value)
+                          handleMarkerColorChange(color.hex)
                         }
                         disabled={isSavingMarkerColor}
                       >

@@ -20,6 +20,7 @@ import {
   LocationUpdate,
   Pet,
 } from "../../services/api";
+import PhoneLocationMarker from "../../components/PhoneLocationMarker";
 
 const DEFAULT_MARKER_COLOR = "#2563EB";
 
@@ -346,6 +347,7 @@ export default function HistoryScreen() {
           longitudeDelta: 0.05,
         }}
       >
+        <PhoneLocationMarker />
         {visibleHistories.map((history) => {
           const markerColor =
             history.pet.MarkerColor ??
@@ -471,7 +473,7 @@ export default function HistoryScreen() {
 
         <Text style={styles.subtitle}>
           {selectedHistory
-            ? `${selectedHistory.pet.DeviceName ?? "Unnamed Pet"} route`
+            ? `${selectedHistory.pet.DeviceName ?? "Unnamed Pet"}'s Route`
             : "All recorded pet routes"}
         </Text>
 

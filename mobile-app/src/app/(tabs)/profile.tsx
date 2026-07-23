@@ -90,6 +90,7 @@ export default function ProfileScreen() {
                 pathname: "/pet/[id]",
                 params: {
                   id: pet.DeviceId.toString(),
+                  markerColor: pet.MarkerColor ?? "#2563EB",
                 },
               })
             }

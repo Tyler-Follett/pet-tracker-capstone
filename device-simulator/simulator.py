@@ -1,12 +1,15 @@
 import random
 import time
 from datetime import datetime, timezone
+from threading import Thread
 
 import requests
 
 
-API_URL = "https://pet-tracker-api-capstone-cgh4gjhtdwevf9dq.canadacentral-01.azurewebsites.net/locations"
-DEVICE_IDENTIFIER = "TEST-DEVICE-002"
+API_URL = (
+    "https://pet-tracker-api-capstone-"
+    "cgh4gjhtdwevf9dq.canadacentral-01.azurewebsites.net/locations"
+)
 
 
 class DeviceSimulator:
@@ -24,20 +27,29 @@ class DeviceSimulator:
             "latitude": round(self.latitude, 6),
             "longitude": round(self.longitude, 6),
             "accuracyMeters": round(random.uniform(3.0, 8.0), 2),
-            "recordedAt": datetime.now(timezone.utc).isoformat()
+            "recordedAt": datetime.now(timezone.utc).isoformat(),
         }
 
     def upload_location(self, location):
-        response = requests.post(API_URL, json=location, timeout=10)
+        try:
+            response = requests.post(API_URL, json=location, timeout=10)
 
-        if response.status_code == 200:
-            print("Uploaded:", location)
-        else:
-            print("Upload failed:", response.status_code, response.text)
+            if response.status_code == 200:
+                print(
+                    f"[{self.device_identifier}] Uploaded: "
+                    f"{location['latitude']}, {location['longitude']}"
+                )
+            else:
+                print(
+                    f"[{self.device_identifier}] Upload failed: "
+                    f"{response.status_code} {response.text}"
+                )
+
+        except requests.RequestException as error:
+            print(f"[{self.device_identifier}] Request error: {error}")
 
     def run(self, interval_seconds=5):
-        print("Starting device simulator...")
-        print(f"Device: {self.device_identifier}")
+        print(f"Starting simulator for {self.device_identifier}...")
 
         while True:
             location = self.generate_location()
@@ -46,10 +58,35 @@ class DeviceSimulator:
 
 
 if __name__ == "__main__":
-    simulator = DeviceSimulator(
-        device_identifier=DEVICE_IDENTIFIER,
-        latitude=47.5615,
-        longitude=-52.7126
+    device_1 = DeviceSimulator(
+        device_identifier="TEST-DEVICE-001",
+        latitude=47.5493,
+        longitude=-52.7413,
     )
 
-    simulator.run()
+    device_2 = DeviceSimulator(
+        device_identifier="TEST-DEVICE-002",
+        latitude=47.5510,
+        longitude=-52.7450,
+    )
+
+    device_1_thread = Thread(
+        target=device_1.run,
+        kwargs={"interval_seconds": 5},
+        daemon=True,
+    )
+
+    device_2_thread = Thread(
+        target=device_2.run,
+        kwargs={"interval_seconds": 5},
+        daemon=True,
+    )
+
+    device_1_thread.start()
+    device_2_thread.start()
+
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("\nStopping device simulators...")
