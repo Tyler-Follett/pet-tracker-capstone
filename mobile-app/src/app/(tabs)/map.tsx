@@ -188,7 +188,7 @@ export default function MapScreen() {
 
           return (
             <Marker
-              key={pet.DeviceId}
+              key={`${pet.DeviceId}-${pet.PhotoUrl ?? "no-photo"}`}
               coordinate={{
                 latitude: pet.LatestLatitude!,
                 longitude: pet.LatestLongitude!,
@@ -206,6 +206,7 @@ export default function MapScreen() {
                     {
                       borderColor: markerColor,
                     },
+                    pet.PhotoUrl && styles.photoMarkerIcon,
                     selectedPetId ===
                       pet.DeviceId && {
                       transform: [
@@ -214,13 +215,20 @@ export default function MapScreen() {
                     },
                   ]}
                 >
-                  <Text
-                    style={
-                      styles.markerPlaceholder
-                    }
-                  >
-                    🐾
-                  </Text>
+                  {pet.PhotoUrl ? (
+                    <View style={styles.markerPhotoFrame}>
+                      <Image
+                        source={{ uri: pet.PhotoUrl }}
+                        style={styles.markerPhoto}
+                        resizeMode="cover"
+                        fadeDuration={0}
+                      />
+                    </View>
+                  ) : (
+                    <Text style={styles.markerPlaceholder}>
+                      🐾
+                    </Text>
+                  )}
                 </View>
 
                 <View
@@ -449,6 +457,25 @@ const styles = StyleSheet.create({
 
   markerPlaceholder: {
     fontSize: 25,
+  },
+
+  markerPhoto: {
+    width: "100%",
+    height: "100%",
+  },
+
+  photoMarkerIcon: {
+    width: 62,
+    height: 62,
+    borderRadius: 31,
+  },
+
+  markerPhotoFrame: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 28,
+    overflow: "hidden",
+    backgroundColor: "#cbd5e1",
   },
 
   markerPoint: {

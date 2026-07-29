@@ -197,8 +197,9 @@ async function handleChoosePhoto() {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
-      allowsEditing: false,
-      quality: 0.8,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
     });
 
 

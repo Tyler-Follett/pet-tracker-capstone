@@ -66,8 +66,8 @@ if __name__ == "__main__":
 
     device_2 = DeviceSimulator(
         device_identifier="TEST-DEVICE-002",
-        latitude=47.5510,
-        longitude=-52.7450,
+        latitude=47.5492,
+        longitude=-52.7409,
     )
 
     device_1_thread = Thread(
